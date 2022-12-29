@@ -7,6 +7,7 @@ import librosa
 import random
 import scipy.signal
 
+
 class AudioProcessor:
     def __init__(self, opt):
         self.num_features = opt.num_features
@@ -55,7 +56,6 @@ class AudioProcessor:
                 # Pad and slice
                 result = np.pad(data, (-shift, 0), 'constant', constant_values=0)[:shift]
         return result
-
 
     def get_log_mel_spectra(self, audio_data):
         print(audio_data)
