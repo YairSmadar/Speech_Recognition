@@ -1,9 +1,9 @@
 import config
-from dataloader import Dataloader
 import numpy as np
 import torch
 import torch.nn as nn
 import DeepSpeech2Model
+from dataloader import SpectogramDataset
 
 device_name = 'cuda' if torch.cuda.is_available() else 'cpu'
 device = torch.device(device_name)
@@ -39,8 +39,8 @@ def plot_spectogram(data):
 
 
 def main(opt):
-    data = Dataloader(opt)
-    plot_spectogram(data)
+    data = SpectogramDataset(opt)
+    # plot_spectogram(data)
 
     model = DeepSpeech2Model.get_model()
     model = nn.DataParallel(model).to(device)

@@ -107,7 +107,7 @@ def get_class(path):
     
 parser = config.get_arguments()
 opt = parser.parse_args()
-spec_dataset = SpectogramDataset()
+spec_dataset = SpectogramDataset(opt)
 dataloader = DataLoader(spec_dataset, batch_size=1, shuffle=True)
 
 for X_batch, y_batch in dataloader:

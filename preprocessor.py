@@ -7,6 +7,7 @@ import librosa
 import random
 import scipy.signal
 import matplotlib.pyplot as plt
+import librosa.display
 
 class AudioProcessor:
     def __init__(self, opt):
