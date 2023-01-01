@@ -6,7 +6,7 @@ import numpy as np
 import librosa
 import random
 import scipy.signal
-
+import matplotlib.pyplot as plt
 
 class AudioProcessor:
     def __init__(self, opt):
@@ -56,16 +56,19 @@ class AudioProcessor:
                 # Pad and slice
                 result = np.pad(data, (-shift, 0), 'constant', constant_values=0)[:shift]
         return result
+    
+    def plot_spectogram(self, spectogram):
+        plt.figure()
+        librosa.display.specshow(librosa.power_to_db(spectogram, ref=np.max), y_axis='mel', fmax=8000, x_axis='time')
+        plt.colorbar(format='%+2.0f dB')
+        plt.title('Mel spectrogram')
+        plt.tight_layout()
+        plt.show()
+        
 
     def get_log_mel_spectra(self, audio_data):
-        print(audio_data)
         spectrogram = librosa.feature.melspectrogram(y = audio_data, sr=self.sample_rate, n_mels=128,fmax=8000)
-                        # hop_length=self.window_step_samples,
-                        # n_fft=self.window_duration_samples,
-                        # fmin=20,
-                        # fmax=8000)
-
         spectrogram = librosa.power_to_db(spectrogram)
         spectrogram = spectrogram.astype(np.float32)
-        print(spectrogram.shape)
+    
         return spectrogram.flatten()
