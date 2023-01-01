@@ -28,13 +28,13 @@ class SpectogramDataset(Dataset):
         path = self.data_files_list[index]
         cls = get_class(path)
         sample_rate, data = read_wav(path)
-        self.preprocessor.ensure_correct_length(data)
+        data = self.preprocessor.ensure_correct_length(data)
         # if self.opt.is_train:
         data,is_zeros = self.add_augmentations(data)
         cls = 'silence' if is_zeros else cls
 
         mel_spectogram = self.preprocessor.get_log_mel_spectra(data.astype(np.float32))
-        data_dict = {'data':mel_spectogram, 'cls':self.class_label_dict[cls]}
+        data_dict = [mel_spectogram, self.class_label_dict[cls]]
         return data_dict
     
     def add_augmentations(self, data):
@@ -93,8 +93,9 @@ class SpectogramDataset(Dataset):
                 ret_noise_list.append(signal[i:i+sample_rate])
         return ret_noise_list
     
-    def plot_spectogram(self,spectogram):
-        self.preprocessor.plot_spectogram(spectogram)
+    def plot_spectogram(self, spectogram, lable):
+        _class = list(filter(lambda x: self.class_label_dict[x] == lable, self.class_label_dict))[0]
+        self.preprocessor.plot_spectogram(spectogram, _class)
         
 def read_file_to_list(file_path):
     with open(file_path, 'r') as file:
@@ -111,6 +112,7 @@ spec_dataset = SpectogramDataset(opt)
 dataloader = DataLoader(spec_dataset, batch_size=1, shuffle=True)
 
 for X_batch, y_batch in dataloader:
-    spec_dataset.plot_spectogram(X_batch)
+
+    spec_dataset.plot_spectogram(X_batch, y_batch)
     print(y_batch)
 

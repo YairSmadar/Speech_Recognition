@@ -41,7 +41,7 @@ class AudioProcessor:
         if data_energy > 0:
             result = data + (noise_strength * noise_data * data_energy / noise_energy).astype(np.int16)
         else:
-            result = noise_strength * noise_data * 0.01 # Reduce more
+            result = noise_strength * noise_data * 0.01 #Reduce more
         return result
 
     def shift_time(self, data, shift=0):
@@ -58,13 +58,21 @@ class AudioProcessor:
                 result = np.pad(data, (-shift, 0), 'constant', constant_values=0)[:shift]
         return result
     
-    def plot_spectogram(self, spectogram):
-        plt.figure()
-        librosa.display.specshow(librosa.power_to_db(spectogram, ref=np.max), y_axis='mel', fmax=8000, x_axis='time')
-        plt.colorbar(format='%+2.0f dB')
-        plt.title('Mel spectrogram')
-        plt.tight_layout()
+    def plot_spectogram(self, spectogram, _class):
+        # plt.figure()
+        # librosa.display.specshow(librosa.power_to_db(spectogram.reshape(4096,1), ref=np.max), y_axis='mel', fmax=8000, x_axis='time')
+        # plt.colorbar(format='%+2.0f dB')
+        # plt.title('Mel spectrogram')
+        # plt.tight_layout()
+        # plt.show()
+
+        plt.specgram(spectogram.reshape(4096), Fs=16000)
+        plt.title(_class)
+        plt.xlabel('Time')
+        plt.ylabel('Frequency')
+
         plt.show()
+
         
 
     def get_log_mel_spectra(self, audio_data):
