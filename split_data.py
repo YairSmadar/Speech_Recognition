@@ -26,6 +26,15 @@ def split_data(opt, ignore_dirs):
     test_paths, val_paths, _, _ = train_test_split(val_test_paths, val_test_paths, test_size=0.5, random_state=42)
 
     # Write file paths to respective files
+    for i in train_paths:
+        if not i.endswith('.wav'):
+            train_paths.remove(i)
+    for i in val_paths:
+        if not i.endswith('.wav'):
+            val_paths.remove(i)
+    for i in test_paths:
+        if not i.endswith('.wav'):
+            test_paths.remove(i)
     write_paths_to_file(train_paths, os.path.join(opt.save_directory, 'train.txt'))
     write_paths_to_file(test_paths, os.path.join(opt.save_directory, 'test.txt'))
     write_paths_to_file(val_paths, os.path.join(opt.save_directory, 'validation.txt'))

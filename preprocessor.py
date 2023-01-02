@@ -9,6 +9,7 @@ import scipy.signal
 import matplotlib.pyplot as plt
 import librosa.display
 
+
 class AudioProcessor:
     def __init__(self, opt):
         self.num_features = opt.num_features
@@ -73,11 +74,20 @@ class AudioProcessor:
 
         plt.show()
 
-        
-
     def get_log_mel_spectra(self, audio_data):
-        spectrogram = librosa.feature.melspectrogram(y = audio_data, sr=self.sample_rate, n_mels=128,fmax=8000)
+        # plt.subplot(211)
+        # plt.plot(audio_data)
+        # plt.xlabel('Sample')
+        # plt.ylabel('Amplitude')
+
+        spectrogram = librosa.feature.melspectrogram(y=audio_data, sr=self.sample_rate, n_mels=self.num_features,
+                                                     hop_length=self.window_step_samples, fmin=20, fmax=8000)
         spectrogram = librosa.power_to_db(spectrogram)
         spectrogram = spectrogram.astype(np.float32)
-    
-        return spectrogram.flatten()
+
+        # plt.subplot(212)
+        # plt.specgram(spectrogram.flatten(), Fs=self.sample_rate)
+        # plt.xlabel('Time')
+        # plt.ylabel('Frequency')
+        # plt.show()
+        return spectrogram

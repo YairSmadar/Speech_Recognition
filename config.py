@@ -30,5 +30,14 @@ def get_arguments():
     parser.add_argument('--momentum', default=0.9, type=float, metavar='M', help='momentum')
     parser.add_argument('--weight_decay', '--wd', default=1e-4, type=float,
                         metavar='W', help='weight decay (default: 1e-4)')
+    parser.add_argument('--batch_size', default=128, type=int, help='batch size')
+    parser.add_argument('--epochs', default=100, type=int, help='number of epochs')
+    parser.add_argument('--print_freq', default=25, type=int, help='train and test print frequency')
+    parser.add_argument('--n_cnn_layers', default=3, type=int, help='number of CNN layers')
+    parser.add_argument('--n_rnn_layers', default=5, type=int, help='number of RNN layers')
+    parser.add_argument('--rnn_dim', default=512, type=int, help='number of RNN layers')
+    parser.add_argument('--n_class', default=31, type=int, help='number of classes')
+    parser.add_argument('--stride', default=2, type=int, help='stride')
+    parser.add_argument('--dropout', default=0.1, type=float, help='dropout prop')
 
     return parser
