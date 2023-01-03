@@ -25,7 +25,7 @@ def get_arguments():
     # train arguments
     parser.add_argument('--shift_signal_freq', default=0.1, help='probability to shift signal')
     parser.add_argument('--noise_freq', default=0.1, help='probability to add noise to signal')
-    parser.add_argument('--silence_freq', default=0.05, help='probability to replace data with silence')
+    parser.add_argument('--silence_freq', default=0, help='probability to replace data with silence')
     parser.add_argument('--lr', default=0.01, help='learning rate')
     parser.add_argument('--momentum', default=0.9, type=float, metavar='M', help='momentum')
     parser.add_argument('--weight_decay', '--wd', default=1e-4, type=float,
