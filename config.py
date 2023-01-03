@@ -23,14 +23,14 @@ def get_arguments():
                         help='used as augmentation in train, shifts the signal')
 
     # train arguments
-    parser.add_argument('--shift_signal_freq', default=0.5, help='probability to shift signal')
-    parser.add_argument('--noise_freq', default=0.5, help='probability to add noise to signal')
+    parser.add_argument('--shift_signal_freq', default=0.1, help='probability to shift signal')
+    parser.add_argument('--noise_freq', default=0.1, help='probability to add noise to signal')
     parser.add_argument('--silence_freq', default=0.05, help='probability to replace data with silence')
     parser.add_argument('--lr', default=0.01, help='learning rate')
     parser.add_argument('--momentum', default=0.9, type=float, metavar='M', help='momentum')
     parser.add_argument('--weight_decay', '--wd', default=1e-4, type=float,
                         metavar='W', help='weight decay (default: 1e-4)')
-    parser.add_argument('--batch_size', default=128, type=int, help='batch size')
+    parser.add_argument('--batch_size', default=256, type=int, help='batch size')
     parser.add_argument('--epochs', default=100, type=int, help='number of epochs')
     parser.add_argument('--print_freq', default=25, type=int, help='train and test print frequency')
     parser.add_argument('--n_cnn_layers', default=3, type=int, help='number of CNN layers')

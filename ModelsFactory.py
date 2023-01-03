@@ -23,7 +23,7 @@ class MyModel2(nn.Module):
         self.conv5 = nn.Conv2d(in_channels=32, out_channels=64, kernel_size=(3, 3), padding='same')
         self.batch_norm5 = nn.BatchNorm2d(num_features=64)
 
-        self.lstm = nn.LSTM(rnn_dim, hidden_size=1024, num_layers=2)
+        # self.lstm = nn.LSTM(rnn_dim, hidden_size=1024, num_layers=2, batch_first=True)
 
         self.dropout1 = nn.Dropout(p=dropout)
         self.dropout2 = nn.Dropout(p=dropout)
@@ -31,7 +31,8 @@ class MyModel2(nn.Module):
 
         self.maxpool2d = nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2))
 
-        self.fc1 = nn.Linear(in_features=16384, out_features=512)
+        # self.fc1 = nn.Linear(in_features=16384, out_features=512)
+        self.fc1 = nn.Linear(in_features=64640, out_features=512)
 
         self.batch_norm6 = nn.BatchNorm1d(num_features=512)
 
@@ -49,50 +50,46 @@ class MyModel2(nn.Module):
         x = self.conv1(x)
         x = self.batch_norm1(x)
         x = F.gelu(x)
+
         x = self.conv2(x)
+        x = F.gelu(x)
         x = self.batch_norm2(x)
-        x = F.gelu(x)
         x = self.dropout1(x)
+
         x = self.conv3(x)
-        x = self.batch_norm3(x)
         x = F.gelu(x)
+        x = self.batch_norm3(x)
+
         x = self.conv4(x)
-        x = self.batch_norm4(x)
         x = F.gelu(x)
         x = self.dropout2(x)
+        x = self.batch_norm4(x)
+
         x = self.conv5(x)
-        x = self.batch_norm5(x)
         x = F.gelu(x)
+        x = self.batch_norm5(x)
 
         N, C, H, W = x.shape
 
         x = x.view(N, C, H*W)
-        x = x.transpose(0,1)
 
-        x, _ = self.lstm(x)
-
-        x = x.transpose(0,1)
+        # x, _ = self.lstm(x)
 
         x = self.maxpool2d(x)
 
         N, C, HW = x.shape
-
         x = x.reshape(N, C*HW)
-        x = self.fc1(x)
 
-        x = self.batch_norm6(x)
+        x = self.fc1(x)
         x = F.gelu(x)
+        x = self.batch_norm6(x)
         x = self.dropout3(x)
 
         x = self.fc2(x)
-        x = F.gelu(x)
-
         x = self.batch_norm7(x)
+        x = F.gelu(x)
 
         x = self.fc3(x)
-        x = F.gelu(x)
-
-        x = self.batch_norm8(x)
 
         return x
 

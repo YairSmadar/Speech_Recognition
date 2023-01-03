@@ -52,11 +52,12 @@ class AudioProcessor:
             if np.sum(data[:shift]**2) < 0.01 * np.sum(data**2):
                 # Pad and slice
                 result = np.pad(data, (0, shift), 'constant', constant_values=0)[shift:]
-        else:
+        elif shift < 0:
             # Check if the last part has low volume
             if np.sum(data[shift:]**2) < 0.01 * np.sum(data**2):
                 # Pad and slice
                 result = np.pad(data, (-shift, 0), 'constant', constant_values=0)[:shift]
+
         return result
     
     def plot_spectogram(self, spectogram, _class):

@@ -1,7 +1,6 @@
 import time
 
 import config
-import numpy as np
 import torch
 import torch.nn as nn
 import ModelsFactory
@@ -91,6 +90,10 @@ def train(train_loader, model, criterion, optimizer, epoch, opt):
                   'Prec@5 {top5.val:.3f} ({top5.avg:.3f})'.format(
                 epoch, i, len(train_loader), batch_time=batch_time, loss=losses, top1=top1, top5=top5))
 
+    print(
+        'Train:\t[{0}]\tLoss {loss.avg:.4f}\tPrec@1 {top1.avg:.3f}\tPrec@5 {top5.avg:.3f}\n'.format(epoch, loss=losses,
+                                                                                                    top1=top1,
+                                                                                                    top5=top5))
     return losses.avg, top1.avg, top5.avg
 
 
@@ -179,6 +182,7 @@ def main(opt):
 
     data = dataloader.SpectogramDataset(opt, set_type='val')
     val_loader = dataloader.getDataLoader(data, opt.batch_size)
+    val_loader.dataset.is_train = False
 
     for epoch in range(opt.epochs):
         

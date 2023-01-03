@@ -20,20 +20,24 @@ class SpectogramDataset(Dataset):
         self.class_label_dict = self.get_class_label_dict(opt)
         self.data_files_list = self.get_data_file_list()
         self.noise_files = self.get_noise_samples()
+        self.is_train = True
 
     def __len__(self):
         return len(self.data_files_list)
 
     def __getitem__(self, index):
 
+        is_zeros = False
         path = self.data_files_list[index]
 
         cls = get_class(path)
 
         sample_rate, data = read_wav(path)
         data = self.preprocessor.ensure_correct_length(data)
-        # if self.opt.is_train:
-        data, is_zeros = self.add_augmentations(data)
+
+        if self.is_train:
+            data, is_zeros = self.add_augmentations(data)
+
         cls = 'silence' if is_zeros else cls
 
         mel_spectogram = self.preprocessor.get_log_mel_spectra(data.astype(np.float32))
