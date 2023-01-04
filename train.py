@@ -241,8 +241,8 @@ def main(opt):
     # test_loader2 = data_loader_built_in.test_loader
 
     for epoch in range(opt.epochs):
-        train_loss, train_prc1, train_prc5 = 1,2,3 #train(train_loader, model, criterion, optimizer, epoch, opt)
-        test_loss, test_prc1, test_prc5 = 4,5,6 #validate(val_loader, model, criterion, epoch, opt)
+        train_loss, train_prc1, train_prc5 = train(train_loader, model, criterion, optimizer, epoch, opt)
+        test_loss, test_prc1, test_prc5 = validate(val_loader, model, criterion, epoch, opt)
 
         scheduler.step()
 
