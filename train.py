@@ -6,7 +6,7 @@ import torch.nn as nn
 import models_factory
 import data_loader
 from sklearn.metrics import confusion_matrix
-import data_loader_built_in
+# import data_loader_built_in
 
 device_name = 'cuda' if torch.cuda.is_available() else 'cpu'
 device = torch.device(device_name)
@@ -188,7 +188,7 @@ def main(opt):
     # define loss function (criterion) and optimizer
     criterion = nn.CrossEntropyLoss().to(device)
     optimizer = torch.optim.Adam(model.parameters(), opt.lr, weight_decay=opt.weight_decay)
-    # scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=lambda1)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.1)
 
     # get data
     data = data_loader.SpectogramDataset(opt, set_type='train')
@@ -199,13 +199,15 @@ def main(opt):
     val_loader.dataset.is_train = False
 
     # get data2
-    train_loader2 = data_loader_built_in.train_loader
-    test_loader2 = data_loader_built_in.test_loader
+    # train_loader2 = data_loader_built_in.train_loader
+    # test_loader2 = data_loader_built_in.test_loader
 
     for epoch in range(opt.epochs):
         
         train_loss, train_prc1, train_prc5 = train(train_loader, model, criterion, optimizer, epoch, opt)
         test_loss, test_prc1, test_prc5 = validate(val_loader, model, criterion, epoch, opt)
+
+        scheduler.step()
 
         save_results(train_loss, train_prc1, train_prc5, test_loss, test_prc1, test_prc5)
 

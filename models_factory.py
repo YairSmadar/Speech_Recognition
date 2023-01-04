@@ -10,7 +10,7 @@ def get_model(opt):
 
 
 class MyModel2(nn.Module):
-    def __init__(self, rnn_dim=4040, n_class=30, dropout=0.1):
+    def __init__(self, rnn_dim=2560, n_class=30, dropout=0.1):
         super(MyModel2, self).__init__()
         self.conv1 = nn.Conv2d(in_channels=1, out_channels=8, kernel_size=(3, 3), padding='same')
         self.batch_norm1 = nn.BatchNorm2d(num_features=8)
@@ -23,7 +23,7 @@ class MyModel2(nn.Module):
         self.conv5 = nn.Conv2d(in_channels=32, out_channels=64, kernel_size=(3, 3), padding='same')
         self.batch_norm5 = nn.BatchNorm2d(num_features=64)
 
-        # self.lstm = nn.LSTM(rnn_dim, hidden_size=1024, num_layers=2, batch_first=True)
+        self.lstm = nn.LSTM(rnn_dim, hidden_size=1024, num_layers=2, batch_first=True)
 
         self.dropout1 = nn.Dropout(p=dropout)
         self.dropout2 = nn.Dropout(p=dropout)
@@ -31,8 +31,8 @@ class MyModel2(nn.Module):
 
         self.maxpool2d = nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2))
 
-        # self.fc1 = nn.Linear(in_features=16384, out_features=512)
-        self.fc1 = nn.Linear(in_features=64640, out_features=512)
+        self.fc1 = nn.Linear(in_features=25600, out_features=512)
+        # self.fc1 = nn.Linear(in_features=64640, out_features=512)
 
         self.batch_norm6 = nn.BatchNorm1d(num_features=512)
 
@@ -71,14 +71,16 @@ class MyModel2(nn.Module):
 
         N, C, H, W = x.shape
 
-        x = x.view(N, C, H*W)
+        x = x.transpose(2,1)
+        x = x.transpose(1,3)
+        x = x.reshape(N, W, C*H)
 
-        # x, _ = self.lstm(x)
+        x, _ = self.lstm(x)
 
         x = self.maxpool2d(x)
 
-        N, C, HW = x.shape
-        x = x.reshape(N, C*HW)
+        N, W, HC = x.shape
+        x = x.reshape(N, W*HC)
 
         x = self.fc1(x)
         x = F.gelu(x)
