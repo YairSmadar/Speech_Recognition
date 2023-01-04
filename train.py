@@ -1,3 +1,5 @@
+import copy
+import os
 import time
 
 import config
@@ -6,11 +8,13 @@ import torch.nn as nn
 import models_factory
 import data_loader
 from sklearn.metrics import confusion_matrix
+
 # import data_loader_built_in
 
 device_name = 'cuda' if torch.cuda.is_available() else 'cpu'
 device = torch.device(device_name)
-
+best_prec1 = 0
+best_state_dict = None
 
 class AverageMeter(object):
     """Computes and stores the average and current value"""
@@ -163,24 +167,58 @@ def validate(val_loader, model, criterion, epoch, opt):
 
         precision, recall, fscore, support = score(y_test, predicted)
 
-        print('precision: {}'.format(precision))
-        print('recall: {}'.format(recall))
-        print('fscore: {}'.format(fscore))
-        print('support: {}'.format(support))
+        # print('precision: {}'.format(precision))
+        # print('recall: {}'.format(recall))
+        # print('fscore: {}'.format(fscore))
+        # print('support: {}'.format(support))
 
     return losses.avg, top1.avg, top5.avg
 
 
-def save_results(train_loss, train_prc1, train_prc5, test_loss, test_prc1, test_prc5):
-    pass
+def save_best_prec1(model, test_prcition1: list):
+    global best_prec1
+    global best_state_dict
+
+    if test_prcition1[-1] > best_prec1:
+        best_state_dict = copy.deepcopy(model.state_dict())
+        best_prec1 = test_prcition1[-1]
+
+    return best_state_dict
+
+
+def save_checkpoint(model, optimizer, epoch, opt,
+                    train_losses, train_prcition1, train_prcition5, test_losses, test_prcition1, test_prcition5):
+    # save best prec@1
+    save_best_prec1(model, test_prcition1)
+
+    if not os.path.exists(opt.save_path):
+        os.makedirs(opt.save_path)
+
+    model_type = 'LSTM' if opt.LSTM else 'CNN'
+    full_path = os.path.join(opt.save_path, f'{model_type}_model.tar')
+
+    # save checkpoint
+    torch.save({'epoch': epoch,
+                'model': model,
+                'Best_state_dict': best_state_dict,
+                'best_prec1': best_prec1,
+                'optimizer': optimizer.state_dict(),
+                'train_losses': train_losses,
+                'train_prcition1': train_prcition1,
+                'train_prcition5': train_prcition5,
+                'test_losses': test_losses,
+                'test_prcition1': test_prcition1,
+                'test_prcition5': test_prcition5,
+                },
+               full_path
+               )
 
 
 def main(opt):
-
-    # # initialize the results arrays
-    # train_prcition1, train_prcition5 = [], []
-    # test_prcition1, test_prcition5 = [], []
-    # train_losses, test_losses = [], []
+    # initialize the results arrays
+    train_prcition1, train_prcition5 = [], []
+    test_prcition1, test_prcition5 = [], []
+    train_losses, test_losses = [], []
 
     model = models_factory.get_model(opt)
     model = nn.DataParallel(model).to(device)
@@ -203,13 +241,21 @@ def main(opt):
     # test_loader2 = data_loader_built_in.test_loader
 
     for epoch in range(opt.epochs):
-        
-        train_loss, train_prc1, train_prc5 = train(train_loader, model, criterion, optimizer, epoch, opt)
-        test_loss, test_prc1, test_prc5 = validate(val_loader, model, criterion, epoch, opt)
+        train_loss, train_prc1, train_prc5 = 1,2,3 #train(train_loader, model, criterion, optimizer, epoch, opt)
+        test_loss, test_prc1, test_prc5 = 4,5,6 #validate(val_loader, model, criterion, epoch, opt)
 
         scheduler.step()
 
-        save_results(train_loss, train_prc1, train_prc5, test_loss, test_prc1, test_prc5)
+        # save results
+        train_losses.append(train_loss)
+        train_prcition1.append(train_prc1)
+        train_prcition5.append(train_prc5)
+        test_losses.append(test_loss)
+        test_prcition1.append(test_prc1)
+        test_prcition5.append(test_prc5)
+
+        save_checkpoint(model, optimizer, epoch, opt,
+                        train_losses, train_prcition1, train_prcition5, test_losses, test_prcition1, test_prcition5)
 
 
 if __name__ == '__main__':

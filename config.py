@@ -11,6 +11,7 @@ def get_arguments():
     parser.add_argument('--is_train', action='store_true')
     parser.add_argument('--run_type', default='train', help='for inferencr insert test, and for validation inert valid')
     parser.add_argument('--noise_dir_path', help='directory path to noise')
+    parser.add_argument('--save_path', default="results/", type=str, help='checkpoint save path folder')
 
     # audio parser arguments
     parser.add_argument('--num_features', default=40)
@@ -39,5 +40,7 @@ def get_arguments():
     parser.add_argument('--n_class', default=31, type=int, help='number of classes')
     parser.add_argument('--stride', default=2, type=int, help='stride')
     parser.add_argument('--dropout', default=0.1, type=float, help='dropout prop')
+    parser.add_argument('--LSTM', default=False, action='store_true', help='When False: use CNN only,'
+                                                                           'When True: add LSTM layer')
 
     return parser
