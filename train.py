@@ -3,9 +3,10 @@ import time
 import config
 import torch
 import torch.nn as nn
-import ModelsFactory
-import dataloader
+import models_factory
+import data_loader
 from sklearn.metrics import confusion_matrix
+import data_loader_built_in
 
 device_name = 'cuda' if torch.cuda.is_available() else 'cpu'
 device = torch.device(device_name)
@@ -154,6 +155,18 @@ def validate(val_loader, model, criterion, epoch, opt):
     print('Test:\t[{0}]\tLoss {loss.avg:.4f}\tPrec@1 {top1.avg:.3f}\tPrec@5 {top5.avg:.3f}\n'.format(epoch, loss=losses,
                                                                                                      top1=top1,
                                                                                                      top5=top5))
+    if epoch % 5 == 0:
+        from sklearn.metrics import precision_recall_fscore_support as score
+
+        predicted = [1, 2, 3, 4, 5, 1, 2, 1, 1, 4, 5]
+        y_test = [1, 2, 3, 4, 5, 1, 2, 1, 1, 4, 1]
+
+        precision, recall, fscore, support = score(y_test, predicted)
+
+        print('precision: {}'.format(precision))
+        print('recall: {}'.format(recall))
+        print('fscore: {}'.format(fscore))
+        print('support: {}'.format(support))
 
     return losses.avg, top1.avg, top5.avg
 
@@ -169,20 +182,25 @@ def main(opt):
     # test_prcition1, test_prcition5 = [], []
     # train_losses, test_losses = [], []
 
-    model = ModelsFactory.get_model(opt)
+    model = models_factory.get_model(opt)
     model = nn.DataParallel(model).to(device)
 
     # define loss function (criterion) and optimizer
     criterion = nn.CrossEntropyLoss().to(device)
     optimizer = torch.optim.Adam(model.parameters(), opt.lr, weight_decay=opt.weight_decay)
+    # scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=lambda1)
 
     # get data
-    data = dataloader.SpectogramDataset(opt, set_type='train')
-    train_loader = dataloader.getDataLoader(data, opt.batch_size)
+    data = data_loader.SpectogramDataset(opt, set_type='train')
+    train_loader = data_loader.getDataLoader(data, opt.batch_size)
 
-    data = dataloader.SpectogramDataset(opt, set_type='val')
-    val_loader = dataloader.getDataLoader(data, opt.batch_size)
+    data = data_loader.SpectogramDataset(opt, set_type='val')
+    val_loader = data_loader.getDataLoader(data, opt.batch_size)
     val_loader.dataset.is_train = False
+
+    # get data2
+    train_loader2 = data_loader_built_in.train_loader
+    test_loader2 = data_loader_built_in.test_loader
 
     for epoch in range(opt.epochs):
         

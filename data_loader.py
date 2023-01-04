@@ -4,7 +4,7 @@ import numpy as np
 from torch.utils.data import Dataset, DataLoader
 from scipy.io.wavfile import read as read_wav
 import glob
-from preprocessor import AudioProcessor
+from preprocess import AudioProcessor
 import warnings
 
 warnings.filterwarnings("ignore")
