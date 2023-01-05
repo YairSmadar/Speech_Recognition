@@ -226,7 +226,8 @@ def main(opt):
     # define loss function (criterion) and optimizer
     criterion = nn.CrossEntropyLoss().to(device)
     optimizer = torch.optim.Adam(model.parameters(), opt.lr, weight_decay=opt.weight_decay)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.1)
+    if opt.use_scheduler:
+        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.1)
 
     # get data
     data = data_loader.SpectogramDataset(opt, set_type='train')
@@ -244,7 +245,8 @@ def main(opt):
         train_loss, train_prc1, train_prc5 = train(train_loader, model, criterion, optimizer, epoch, opt)
         test_loss, test_prc1, test_prc5 = validate(val_loader, model, criterion, epoch, opt)
 
-        scheduler.step()
+        if opt.use_scheduler:
+            scheduler.step()
 
         # save results
         train_losses.append(train_loss)

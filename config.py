@@ -42,5 +42,6 @@ def get_arguments():
     parser.add_argument('--dropout', default=0.1, type=float, help='dropout prop')
     parser.add_argument('--LSTM', default=False, action='store_true', help='When False: use CNN only,'
                                                                            'When True: add LSTM layer')
+    parser.add_argument('--use_scheduler', default=False, action='store_true', help='If true: StepLR is in used')
 
     return parser
